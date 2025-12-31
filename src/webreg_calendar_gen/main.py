@@ -1,12 +1,16 @@
 import argparse
 import json
 from pprint import pprint
+from datetime import datetime, timedelta
 
+import arrow
 import requests
 import yaml
+from ics import Calendar, Event
 
 from webreg_calendar_gen.webreg_event import WebregEvent
 from webreg_calendar_gen.search_pattern import SearchPattern
+from webreg_calendar_gen.util import tzlocal
 
 base_url = "https://anc.ca.apm.activecommunities.com/burnaby/rest/activities/list"
 
@@ -80,6 +84,13 @@ def get_activities(config: SearchPattern) -> list[WebregEvent] | None:
             break
     return events
 
+def get_cal_event_by_start(cal: Calendar, start_dt: datetime) -> Event | None:
+    start_dt = arrow.get(start_dt, tzinfo=tzlocal)
+    for event in cal.events:
+        if event.begin == start_dt:
+            return event
+    return None
+
 
 def main():
     print("Hello from webreg-calendar-gen!")
@@ -111,7 +122,45 @@ def main():
         return True
 
     activities = [a for a in activities if filter_activities(a)]
-    import pdb;pdb.set_trace()
+
+    cal = Calendar()
+    for act in activities:
+        desc = f"""
+Register for '{act.name}' (#{act.number}), starting on {act.start_dt.strftime("%Y-%m-%d %H:%M")}.
+Activity page: {act.activity_url}
+Direct registration link: {act.enroll_url}
+
+"""
+        # TODO: broken
+        reg_event = get_cal_event_by_start(cal, act.registration_dt)
+        reg_event_exists = True
+        if reg_event is None:
+            reg_event_exists = False
+            reg_event = Event()
+            reg_event.begin = arrow.get(
+                act.registration_dt,
+                tzinfo=tzlocal,
+            )
+            reg_event.duration = timedelta(minutes=10)
+            # HACK: in theory multiple names could exist,
+            # just set in the description
+            reg_event.name = "Register for event"
+            reg_event.description = ""
+        reg_event.description += desc
+        if not reg_event_exists:
+            cal.events.add(reg_event)
+
+        # HACK: configurable prefix?
+        act_event = Event()
+        act_event.name = f"[NRY] {act.name}"
+        act_event.begin = arrow.get(act.start_dt, tzinfo=tzlocal)
+        act_event.end = arrow.get(act.end_dt, tzinfo=tzlocal)
+        cal.events.add(act_event)
+
+    with open("out.ics", "w") as f:
+        f.writelines(cal.serialize_iter())
+
+
 
 
 if __name__ == "__main__":
