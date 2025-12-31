@@ -3,12 +3,12 @@ requires = ["uv_build>=0.8.14,<0.9.0"]
 build-backend = "uv_build"
 
 [project]
-name = "hello"
+name = "webreg_calendar_gen"
 version = "0.1.0"
-description = "Add your description here"
+description = "Calendar reminder generator for Burnaby Webreg class registration"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["requests>=2.32.5"]
+dependencies = ["ics>=0.7.2", "pyyaml>=6.0.3", "requests>=2.32.5"]
 
 [project.scripts]
-hello-python = "hello.main:main"
+webreg-calendar-gen = "webreg_calendar_gen.main:main"

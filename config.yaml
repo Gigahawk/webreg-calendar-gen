@@ -1,0 +1,6 @@
+keyword: "Open Workshop"
+days:
+  "Sun":
+    time_start: "13:30"
+  "Mon":
+    time_start: "17:30"

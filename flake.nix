@@ -103,7 +103,8 @@
               UV_PYTHON_DOWNLOADS = "never";
             }
             // lib.optionalAttrs pkgs.stdenv.isLinux {
-              LD_LIBRARY_PATH = lib.makeLibraryPath pkgs.pythonManylinuxPackages.manylinux1;
+              # idk causes stack smashing error on Ubuntu?
+              #LD_LIBRARY_PATH = lib.makeLibraryPath pkgs.pythonManylinuxPackages.manylinux1;
             };
             shellHook = ''
               unset PYTHONPATH
