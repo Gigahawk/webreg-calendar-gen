@@ -93,7 +93,25 @@ def main():
     with open(args.config, "r") as f:
         config = SearchPattern(yaml.safe_load(f))
     activities = get_activities(config)
-    pprint(activities)
+
+    def filter_activities(act: WebregEvent) -> bool:
+        # Example filter: only show activities with open spots
+        start_dt = act.start_dt
+        start_dow = start_dt.strftime("%a")
+        dow_config = config.days.get(start_dow, None)
+        if dow_config is None:
+            return False
+        time_start = dow_config.get("time_start", None)
+        if time_start is None:
+            return False
+        # HACK: probably should create a class to store a min/max time start/end
+        # instead of this
+        if start_dt.strftime("%H:%M") != time_start:
+            return False
+        return True
+
+    activities = [a for a in activities if filter_activities(a)]
+    import pdb;pdb.set_trace()
 
 
 if __name__ == "__main__":

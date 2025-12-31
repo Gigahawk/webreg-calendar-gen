@@ -8,7 +8,12 @@ version = "0.1.0"
 description = "Calendar reminder generator for Burnaby Webreg class registration"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["ics>=0.7.2", "pyyaml>=6.0.3", "requests>=2.32.5"]
+dependencies = [
+    "ics>=0.7.2",
+    "python-dateutil>=2.9.0.post0",
+    "pyyaml>=6.0.3",
+    "requests>=2.32.5",
+]
 
 [project.scripts]
 webreg-calendar-gen = "webreg_calendar_gen.main:main"
