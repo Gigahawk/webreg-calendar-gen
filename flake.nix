@@ -72,7 +72,7 @@
             );
 
         editablePythonSet = pythonSet.overrideScope editableOverlay;
-        virtualenv = editablePythonSet.mkVirtualEnv "hello-dev-env" workspace.deps.all;
+        virtualenv = editablePythonSet.mkVirtualEnv "webreg-dev-env" workspace.deps.all;
 
         inherit (pkgs.callPackages pyproject-nix.build.util { }) mkApplication;
 
@@ -80,11 +80,11 @@
       in
       {
         packages = {
-          hello = mkApplication {
-            venv = pythonSet.mkVirtualEnv "hello-app-env" workspace.deps.default;
-            package = pythonSet.hello;
+          webreg-calendar-gen = mkApplication {
+            venv = pythonSet.mkVirtualEnv "webreg-app-env" workspace.deps.default;
+            package = pythonSet.webreg-calendar-gen;
           };
-          default = self.packages.${system}.hello;
+          default = self.packages.${system}.webreg-calendar-gen;
         };
         formatter = treefmtEval.config.build.wrapper;
         checks = {
